@@ -1,0 +1,60 @@
+<html>
+<head>
+
+<script src="/static/jquery.js" type="application/javascript"></script>
+<link href="/static/bootstrap.css" rel="stylesheet">
+<script type="text/javascript" src="/_ah/channel/jsapi"></script>
+<script>
+$(document).ready(function(e){
+	
+	$("#roll").click(function()
+			{
+			$.ajax({
+			type: "POST",
+			data: "GetNewNumber="+1,
+			success: function(data)
+			{
+				console.log('data recived')	
+			}
+			});
+	})
+})
+
+	
+
+onMessage = function(m) {
+	    console.log('message received');
+	    message = JSON.parse(m.data);
+	    $(".rolld").html(message.status);
+	}
+onOpend=function(){console.log('channel created');}
+onError= function(){}
+onClose= function(){}
+</script>
+<style>
+.rolld{
+	font-size: 170px;
+	margin: 5px 15px;
+	max-height: 60%;
+	min-width: 40%;
+	text-align:center;
+}</style>
+</head>
+<body>
+<div>
+	<div class="rolld"></div>
+	<button type="button" id="roll">Roll</button>
+</div>
+	 <div>{%if mode != 'picker' %}<img src="https://chart.googleapis.com/chart?chs=200x200&cht=qr&chld=L|2&chl={{request.host_url}}/game/play/{{gameInfo.key.urlsafe}}">{%endif%}</div>
+	 {%if mode != 'picker' %} <a href='{{request.host_url}}/game/play/{{gameInfo.key.urlsafe}}?mode=picker'>start new game</a>{%endif%}
+<script>
+    channel = new goog.appengine.Channel('{{token}}');
+    socket = channel.open();
+    socket.onopen = onOpend;
+    socket.onmessage = onMessage;
+    socket.onerror = onError;
+    socket.onclose = onClose;
+  </script>
+
+</body>
+</html>

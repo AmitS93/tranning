@@ -1,0 +1,353 @@
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="/static/ludho.css"></link>
+	<script type="text/javascript" src="/static/jquery.js"></script>
+ 	<script type="text/javascript" src="/static/jquery-1.9.1.js"></script>
+	<script type="text/javascript" src="/_ah/channel/jsapi"></script>
+	<script type="text/javascript" src="/static/bootstrap.css"></script>
+<script>
+var updateData
+updateData={{dic|safe}}
+$(document).ready(function(e) {
+	var updateData={}
+	newd()
+    for (x = 1; x<25; x++){
+		$('.red').append($('<div class="cube r'+x+'"></div>'))
+		$('.green').append($('<div class="cube g'+x+'"></div>'))
+		$('.blue').append($('<div class="cube b'+x+'"></div>'))
+		$('.yellow').append($('<div class="cube y'+x+'"></div>'))
+	}
+
+	for (x = 1; x<10; x++){
+		$('.start').append($('<div class="cube s'+x+'"></div>'))}
+
+	
+})
+
+onMessage = function(m){
+    console.log('message received');
+    message = JSON.parse(m.data);
+	updateData=message.status
+		
+}
+onOpend=function(){console.log('channel created');}
+onError= function(){}
+onClose= function(){}
+</script>
+	
+</head>
+<body>
+<div class= id="gameboard">
+<div>
+	<div class="player"></div>
+	<div class="move red"></div>
+	<div class="player"></div>
+</div>
+<div style="clear:both;">
+	<div class="move2 green "></div>
+	<div class="start"></div>
+	<div class="move2 blue"></div>
+</div>
+<div style="clear:both;">
+	<div class="player"></div>
+	<div class="move yellow"></div>
+	<div class="player"></div>
+</div>
+</div>
+<div class="status"></div>
+<p style='float:left' id='numberSelected'></p>
+<div class="usrData"></div>
+<script>
+var userData
+userData={}
+var Name
+function newd(){
+	
+		Name='{{n}}'
+		if(updateData!=null){
+			for (x in updateData){
+
+				userData=updateData[x]
+				console.log(updateData[x])
+				refresh()
+				updateUserDataDisp()
+				add=true
+				for(no=userData.noOfPlayers;no>0;no--){
+					if(userData[no].userName==Name){	
+						add=false
+					
+					}
+				}
+				if(add && userData.noOfPlayers<5){
+					addUser()
+				}
+			}
+		}
+		else{
+			userData  = {}
+			userData.noOfPlayers = 0	
+			addUser()
+		}
+
+}
+var gameStared = false;
+var activeUser = 1;
+road=[]
+var boxPOS = {}
+function movepath(color)
+{
+	boxPOS = {}
+
+	if(color=="red"){road=newPath.red}
+	if(color=="blue"){road=newPath.blue}
+	if(color=="green"){road=newPath.green}    
+	if(color=="yellow"){road=newPath.yellow}
+	for( x in road){
+		z = $(road[x]).position();
+		newX = z.left;
+		newY = z.top;
+		boxPOS[x] = {'x':newX,'y':newY}
+		}
+			
+	return boxPOS;
+}
+
+
+function updateActive(){
+
+	userData[activeUser].chance = false
+	activeUser = (activeUser==userData.noOfPlayers?0:activeUser) +1 
+	userData[activeUser].chance = true
+	
+}
+function changeFlage(){
+	
+	updateActive()
+	updateUserDataDisp()
+	
+}
+currentRollValue = '';
+function roll () {
+
+
+		if(userData.noOfPlayers==0){
+			alert("please add a player")}
+		else{
+			changeFlage()
+			}
+		
+	
+}
+var path=[]
+boxroad=[]
+function moveDice(id){
+		
+		pickId = id.attr('pickId')
+
+		if(userData!={}){
+			path = []
+			console.log(path)
+			if(userData[activeUser].currentPos["."+pickId] == 0){
+					if(currentRollValue == 1 || currentRollValue == 6){
+						currentRollValue=1;
+					}
+					else {return}
+				}
+			console.log(userData[activeUser]['color'])
+			boxroad=userData[activeUser].MoveP
+			newPos = userData[activeUser].currentPos["."+pickId] + currentRollValue
+			for (i = userData[activeUser].currentPos["."+pickId]; i<= newPos; i++)
+			{
+				path.push(boxroad[i])
+			}
+			console.log(newPos)
+			userData[activeUser].currentPos["."+pickId] = parseInt(newPos)
+		
+			moveEle(id,path)
+		}
+		
+		if (data==6){updateActive()}
+		
+		currentRollValue=0
+}
+function moveEle (id,path)
+{
+	for (w in path)
+	{
+		if( path[w]){	
+			console.log(path[w])
+			cPos = path[w]
+			console.log(cPos)
+		
+
+			$(id).animate({
+			    left: cPos.x+9,
+			    top: cPos.y+9+(activeUser*2)
+			  }, 500, function() {
+		    // Animation complete.
+			});
+		}
+	}
+
+	
+	changeFlage()
+	
+	send=JSON.stringify(userData)
+	$.ajax({
+            type:"Post",
+            data: "newData="+send,
+            success: function (data){
+            }
+        });
+       
+
+}
+
+function refresh(){
+
+	
+	for(x=userData.noOfPlayers;x>0;x--){
+		console.log("at refresh")
+		console.log(userData)
+		console.log(x)
+		Data = userData[x]
+		color=Data.color
+		for(p=1;p<5; p++)
+		{
+			console.log(Data['color'])
+			die = $('<div class= "die dieId'+userData[userData.noOfPlayers].dieId+' pick'+p+color+' '+color+' " pickId="pick'+p+'" onClick="select(this)"></div>')
+			$('body').append(die);}
+
+		for(y in Data['currentPos']){
+			console.log(y)
+			if(Data['currentPos'][y]!=0){
+				resetdic(y,x,color)}
+				console.log(x)
+
+			
+		}
+
+	}
+
+}
+
+function resetdic(pickId,x,color){
+
+		console.log(pickId)
+		console.log(x)
+		if(Data!={}){
+			path = []
+			console.log(path)
+			console.log(Data['color'])
+			boxroad=Data['MoveP']
+			newPos = Data['currentPos'][pickId]
+			path.push(boxroad[newPos])
+			
+			console.log(newPos)
+			
+			for (w in path){
+	
+				if( path[w]){	
+					console.log(path[w])
+					cPos = path[w]
+					console.log(cPos)
+				
+				
+						$(pickId+color).animate({
+						    left: cPos.x+9,
+						    top: cPos.y+9+(activeUser*2)
+						  }, 500, function() {
+					    // Animation complete.
+						});
+					
+				}
+			}
+		}
+
+		updateUserDataDisp()
+		send=JSON.stringify(userData)
+		$.ajax({
+	            type:"Post",
+	            data: "newData="+send,
+	            success: function (data){
+	            }
+	        });
+}
+	       
+
+	
+var r=[]
+rang=['red','blue','yellow','green']
+function addUser(){
+	if(gameStared==false){
+		if(userData.noOfPlayers==0){
+			r=['red','blue','yellow','green']}
+		else{
+			usedcol=[]
+			for(x=userData.noOfPlayers;x>0;x--){
+				usedcol.push(userData[x].color)
+
+
+			}
+			r=$(rang).not(usedcol).get()
+		}
+		color=prompt("select color")
+		$.ajax({
+			type:"Post",
+			data:"color="+color,
+			success:function(data){
+				print("data received")
+				data = JSON.parse(data);
+				movp=data;		
+			}
+		})
+		userData.noOfPlayers = userData.noOfPlayers +1;
+		
+		userData[userData.noOfPlayers]= {'userName':'{{n}}','color':color,'currentPos':{'.pick1':0,'.pick2':0,'.pick3':0,'.pick4':0 },'dieId':userData.noOfPlayers,'chance':false,'MoveP':movp}
+		for(x=1;x<5;x++){
+		die = $('<div class= "die dieId'+userData[userData.noOfPlayers].dieId+' pick'+x+color+' '+color+' " pickId="pick'+x+'" onClick="select(this)"></div>')
+		$('body').append(die);}
+
+		userinfo= JSON.stringify(userData)
+		$.ajax({
+            type:"Post",
+            data: "newData="+userinfo,
+            success: function (data){
+            	print("data send")
+            }
+        });
+        updateUserDataDisp()
+	}
+	else{
+			alert('game started :P');
+			}
+		updateUserDataDisp()
+
+	}
+function select(id){
+	
+	id=$(id)
+	
+	if(id.hasClass(userData[activeUser].color)){moveDice(id)}
+		
+}
+
+function updateUserDataDisp(){
+		$('.usrData').html('')
+		for (i=1;i<=userData.noOfPlayers;i++)
+			{
+				$('.usrData').append($('<div><div class="userName">'+userData[i].userName+'</div><div class="cPos" >'+JSON.stringify( userData[i].currentPos)+'</div><div class="turn" >'+userData[i].chance+'</div></div>').css('background',userData[i].color))
+				
+			}
+		
+	}
+channel = new goog.appengine.Channel('{{token}}');
+socket = channel.open();
+socket.onopen = onOpend;
+socket.onmessage = onMessage;
+socket.onerror = onError;
+socket.onclose = onClose;
+</script>
+
+</body>
+</html>

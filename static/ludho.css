@@ -1,0 +1,96 @@
+.hideroll{
+	width:0;
+	height:0;
+}
+.die{
+	width: 10px;
+	height: 10px;
+	border: 1px solid #333;
+	border-radius: 8px;
+	background: #982;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+.red.die{background-color: red;
+	left: 638.25px;
+	top: 274px;}
+.blue.die{background-color: blue;
+	left: 670.25px;
+	top: 306px;}
+.yellow.die{background-color: yellow;
+	left: 639.25px;
+	top: 337px;}
+.green.die{background-color: green;
+	left: 608.25px;
+	top: 306px}
+
+
+.rol{height: 20px;
+	width:60px;}
+
+#roll{
+	height: 20px;
+	width:60px;
+}	
+.player{
+	float:left;
+	height:256px;
+	width: 256px;
+	
+}
+.move{
+	float:left;
+	height:256px;
+	width:96px;
+	
+}
+.move2{
+	float:left;
+	height:96px;
+	width: 256px;
+
+
+}
+
+.start{
+	float:left;
+	height: 96px;
+	width: 96px;
+	
+
+}
+#gameboard{
+	margin-left: 25%;
+	height:610px;
+	width: 610px;
+}
+#home{
+	float:right;	
+	top:10;
+	height: 96px;
+	width: 96px;
+	background-color:green;
+
+}
+.cube{
+	float:left;
+	height:30px;
+	width: 30px;
+	border: 1px solid;
+}
+.s2,.r23,.r20,.r17,.r14,.r11,.r8,.r5,.r2,.r10,.r12{
+	background-color: red;
+}
+.s4,.g9,.g10,.g11,.g12,.g13,.g14,.g15,.g16,.g4,.g20{
+	background-color: green;
+}
+.s6,.b9,.b10,.b11,.b12,.b13,.b14,.b15,.b16,.b5,.b21{
+	background-color: blue;
+}
+.s8,.y2,.y5,.y8,.y11,.y14,.y17,.y20,.y23,.y15,.y13{
+	background-color: yellow;
+}
+.usrdata{
+	width: 250px;
+}
